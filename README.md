@@ -1,6 +1,6 @@
 # N7 Forge Webhook Editor
 
-N7 Forge Webhook Editor is a React/Vite editor for composing polished Discord webhook embeds for a Minecraft server. It includes a mobile Discord-style preview and a server-side send route so the Discord webhook URL never reaches the browser.
+N7 Forge Webhook Editor is a React/Vite editor for composing polished Discord webhook embeds for a discord server. It includes a mobile Discord-style preview and a server-side send route so the Discord webhook URL never reaches the browser.
 
 ## What it includes
 
