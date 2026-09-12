@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "ASTER MC Webhook Builder"
+description = "A polished Discord webhook embed composer for ASTER MC server rules, with a live mobile-style preview, editable sections, channel mentions, and secure webhook delivery."
+version = "1.0.0"
+id = "artifacts/aster-mc-webhook-builder"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24468
+
+[services.development]
+run = "pnpm --filter @workspace/aster-mc-webhook-builder run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/aster-mc-webhook-builder", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/aster-mc-webhook-builder/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24468"
+BASE_PATH = "/"

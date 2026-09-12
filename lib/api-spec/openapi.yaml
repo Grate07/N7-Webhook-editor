@@ -1,0 +1,150 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: webhook
+    description: Discord webhook delivery
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /webhook/status:
+    get:
+      operationId: getWebhookStatus
+      tags: [webhook]
+      summary: Check Discord webhook configuration
+      description: Returns whether the server has a Discord webhook configured.
+      responses:
+        "200":
+          description: Webhook configuration status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookStatus"
+  /webhook/send:
+    post:
+      operationId: sendWebhook
+      tags: [webhook]
+      summary: Send an embed through the configured Discord webhook
+      description: Sends the supplied message content and embed through the server-side Discord webhook.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookSendInput"
+      responses:
+        "204":
+          description: Webhook message sent successfully
+        "400":
+          description: Invalid webhook payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Webhook is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    WebhookStatus:
+      type: object
+      properties:
+        configured:
+          type: boolean
+      required:
+        - configured
+    WebhookSendInput:
+      type: object
+      properties:
+        content:
+          type: string
+          maxLength: 2000
+        embed:
+          $ref: "#/components/schemas/WebhookEmbed"
+      required:
+        - embed
+    WebhookEmbed:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 256
+        description:
+          type: string
+          maxLength: 4096
+        color:
+          type: integer
+          minimum: 0
+          maximum: 16777215
+        fields:
+          type: array
+          maxItems: 25
+          items:
+            $ref: "#/components/schemas/WebhookEmbedField"
+        footer:
+          $ref: "#/components/schemas/WebhookEmbedFooter"
+      required:
+        - title
+        - description
+    WebhookEmbedField:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 256
+        value:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        inline:
+          type: boolean
+      required:
+        - name
+        - value
+    WebhookEmbedFooter:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 2048
+      required:
+        - text
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
